@@ -2,6 +2,8 @@
 
 A zero-dependency web app that counts down to the next Formula 1 Grand Prix — then switches to a full live-timing view when the race starts.
 
+**[▶ Open the countdown](https://dvinerlove.github.io/f1-timer/)** — static mirror on GitHub Pages (countdown, schedule, circuit map, weather all work; the official-timing feed needs the local proxy below).
+
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 ## Features
