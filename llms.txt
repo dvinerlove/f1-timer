@@ -1,0 +1,14 @@
+# LIGHTS OUT — F1 Race Countdown
+
+> Zero-dependency web app: millisecond countdown to the next Formula 1 Grand Prix, weekend session schedule in local time, circuit outline map, track weather. During a session it becomes a live timing tower (positions, sectors, tyres), position-flow chart, cars live on the circuit map, per-driver telemetry, race control messages and team radio links.
+
+## Links
+- App (GitHub Pages mirror): https://dvinerlove.github.io/f1-timer/
+- Source code (MIT): https://github.com/dvinerlove/f1-timer
+- Full local version with official timing proxy: `node server.js` → localhost:8420
+
+## Data sources
+- jolpica/ergast (schedule), bacinger/f1-circuits (track geometry), open-meteo (weather), OpenF1 + livetiming.formula1.com (live timing)
+
+## Pricing
+Free. No account, no ads, open source (MIT).
