@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#07090c">
+<title>LIGHTS OUT — F1 Race Countdown</title>
+<meta name="description" content="Live countdown to the next Formula 1 Grand Prix — sessions, circuit map and track weather.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%2307090c'/%3E%3Ccircle cx='8' cy='8' r='4' fill='%23e10600'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<canvas id="fx" aria-hidden="true"></canvas>
+<div class="noise" aria-hidden="true"></div>
+
+<header class="topbar">
+  <span class="brand"><i class="sq"></i>LIGHTS OUT</span>
+  <span class="season" id="season">FIA FORMULA 1 WORLD CHAMPIONSHIP</span>
+  <div class="gantry" id="gantry" aria-hidden="true">
+    <i></i><i></i><i></i><i></i><i></i>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-info">
+      <p class="eyebrow" id="eyebrow">NEXT RACE · LIGHTS OUT IN</p>
+      <h1 class="race-name" id="race-name"><span>—</span> <em>GRAND PRIX</em></h1>
+      <p class="circuit-line" id="circuit-line">…</p>
+      <p class="standings" id="standings" hidden></p>
+
+      <div class="countdown" role="timer" aria-label="Time until race start">
+        <div class="cell"><b id="cd-d">00</b><i>DAYS</i></div>
+        <div class="cell"><b id="cd-h">00</b><i>HRS</i></div>
+        <div class="cell"><b id="cd-m">00</b><i>MIN</i></div>
+        <div class="cell"><b id="cd-s">00</b><i>SEC</i></div>
+        <div class="cell ms"><b id="cd-ms">000</b><i>MS</i></div>
+      </div>
+      <p class="sr" id="sr-clock" role="status"></p>
+
+      <div id="tower-wrap" hidden>
+        <div class="panel-head"><span>LIVE TIMING</span><b id="lap-counter">LAP —</b><i id="lap-age"></i><i id="drs-state"></i><i id="grip"></i><button id="comms" hidden>COMMS</button></div>
+        <ol id="tower" class="tower"></ol>
+        <section id="chart-panel" class="chart" hidden>
+          <div class="panel-head"><span>POSITION FLOW</span><i id="pit-loss"></i></div>
+          <canvas id="pos-chart" width="960" height="220"></canvas>
+        </section>
+      </div>
+    </div>
+
+    <div class="hero-track" id="track-panel">
+      <div class="holo" id="holo">
+        <i class="holo-grid" aria-hidden="true"></i>
+        <svg id="track-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+          <path id="track-ghost" fill="none"/>
+          <path id="track-path" fill="none" pathLength="1"/>
+          <g id="seclines"></g>
+          <g id="corners"></g>
+          <g id="comets"></g>
+          <g id="trails"></g>
+          <g id="cars"></g>
+          <circle id="ping" r="1.7" aria-hidden="true"/>
+          <circle id="sf" r="1.6"/>
+        </svg>
+        <i class="scan" aria-hidden="true"></i>
+      </div>
+      <p class="track-caption" id="track-caption">CIRCUIT MAP — LOADING</p>
+
+      <div id="telem" class="telem" hidden>
+        <div class="panel-head">
+          <span>TELEMETRY</span>
+          <img id="t-pic" class="t-pic" alt="" hidden>
+          <b id="t-driver">—</b>
+        </div>
+        <div class="t-grid">
+          <div class="t-speed"><b id="t-speed">—</b><i>KM/H</i></div>
+          <div class="t-gear"><b id="t-gear">—</b><i>GEAR</i></div>
+          <div class="t-drs"><b id="t-drs">—</b><i>DRS</i></div>
+          <div class="t-bars">
+            <div class="t-bar"><span>RPM</span><div class="bar"><i id="t-rpm"></i></div></div>
+            <div class="t-bar"><span>THR</span><div class="bar"><i id="t-thr" class="thr"></i></div></div>
+            <div class="t-bar"><span>BRK</span><div class="bar"><i id="t-brk" class="brk"></i></div></div>
+          </div>
+          <div class="t-sectors" id="t-sectors">
+            <b class="sec" id="t-s1">S1 —</b><b class="sec" id="t-s2">S2 —</b><b class="sec" id="t-s3">S3 —</b>
+          </div>
+        </div>
+        <div class="t-foot">
+          <span id="t-lap">LAST LAP —</span>
+          <span id="t-tyre"></span>
+          <span id="t-pits"></span>
+          <span id="t-traps"></span>
+          <span id="t-pb"></span>
+          <span id="t-pitt"></span>
+          <span id="t-top"></span>
+          <a id="t-radio" href="#" target="_blank" rel="noopener" hidden>RADIO ↗</a>
+          <canvas id="t-spark" width="300" height="26" aria-hidden="true"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="rc" id="rc" hidden><span class="rc-tag" id="rc-tag">RACE CONTROL</span><span id="rc-msg">—</span></div>
+
+  <div class="kerb" aria-hidden="true"></div>
+
+  <section class="weekend">
+    <h2>RACE WEEKEND <span id="local-note">— YOUR LOCAL TIME</span></h2>
+    <ol class="sessions" id="sessions"></ol>
+    <button class="res-btn" id="res-btn" type="button" hidden></button>
+  </section>
+
+  <footer class="context">
+    <span id="wx">TRACK CONDITIONS — …</span>
+    <span id="track-clock"></span>
+    <span class="src">jolpica/ergast · open-meteo · bacinger/f1-circuits</span>
+  </footer>
+</main>
+
+<div id="finish" hidden></div>
+<div id="results" hidden></div>
+
+<script src="app.js" type="module"></script>
+</body>
+</html>

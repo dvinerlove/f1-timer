@@ -1,0 +1,11 @@
+{
+  "name": "lights-out",
+  "version": "1.0.0",
+  "description": "F1 race countdown that turns into a full live-timing view when the lights go out",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node fit-test.js"
+  }
+}
