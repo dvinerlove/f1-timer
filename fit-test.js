@@ -19,6 +19,11 @@ const T = pts.map(([x, y]) => [(x - minX) * sc, (y - minY) * sc]);
 const L = await (await fetch(
   "https://api.openf1.org/v1/location?session_key=9636" +
   `&date>=${enc("2024-11-03T16:00:00Z")}&date<=${enc("2024-11-03T16:03:00Z")}`)).json();
+/* openf1 rate-limits anonymous calls — say so instead of crashing on .filter */
+if (!Array.isArray(L)) {
+  console.log("FAIL: openf1 returned non-array (rate-limited?):",
+    JSON.stringify(L).slice(0, 200)); process.exit(1);
+}
 const P = dedupe(
   L.filter((p) => (p.x || p.y) && isFinite(p.x) && isFinite(p.y))
    .map((p) => [p.x, p.y]));

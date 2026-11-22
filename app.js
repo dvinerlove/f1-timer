@@ -6,7 +6,10 @@ const $ = (s) => document.querySelector(s);
 const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const DEMO = new URLSearchParams(location.search).get("demo");
 
-const API_NEXT = "https://api.jolpi.ca/ergast/f1/current/next.json";
+/* jolpica's next.json lags after the flag — pick the round ourselves */
+const API_SEASON = "https://api.jolpi.ca/ergast/f1/current.json";
+/* stay on a race this long after lights out (red flags + overrun), then next round */
+const RACE_WINDOW = 4 * 3600e3;
 const GEO_BASE = "https://raw.githubusercontent.com/bacinger/f1-circuits/master/circuits/";
 const WX_URL = (lat, lon) =>
   `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
@@ -85,13 +88,14 @@ function normalizeFallback(f) {
 }
 
 async function getRace() {
-  try {
-    const j = await (await fetch(API_NEXT)).json();
-    const r = j?.MRData?.RaceTable?.Races?.[0];
-    if (r) return normalizeErgast(r);
-  } catch { /* offline or API hiccup */ }
   const now = Date.now();
-  const f = FALLBACK.find((f) => Date.parse(f.at) + 4 * 3600e3 > now);
+  try {
+    const j = await (await fetch(API_SEASON)).json();
+    const r = (j?.MRData?.RaceTable?.Races || []).map(normalizeErgast)
+      .find((r) => r.at + RACE_WINDOW > now);
+    if (r) return r;
+  } catch { /* offline or API hiccup */ }
+  const f = FALLBACK.find((f) => Date.parse(f.at) + RACE_WINDOW > now);
   return f ? normalizeFallback(f) : null;
 }
 
@@ -476,10 +480,12 @@ async function boot() {
   renderRace(r);
   $("#gantry").classList.add("lit");
 
-  /* poll for the next race once this one is done */
+  /* poll for the next race once this one is done; results land
+     in jolpica hours after the flag — keep refreshing the button */
   setInterval(async () => {
     const n = await getRace();
     if (n && (n.round !== race.round || n.name !== race.name)) renderRace(n);
+    else loadResults(race);
   }, 5 * 60e3);
 }
 
