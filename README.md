@@ -6,6 +6,15 @@ A zero-dependency web app that counts down to the next Formula 1 Grand Prix — 
 
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+![Countdown to the Las Vegas Grand Prix](og-image.png)
+
+<details><summary>More screenshots</summary>
+
+![Race weekend: schedule, track map and weather](docs/screenshot.png)
+![Mobile layout](docs/screenshot-mobile.png)
+
+</details>
+
 ## Features
 
 **Between races**

@@ -1,13 +1,17 @@
 /* LIGHTS OUT dev server — static files + /f1/* proxy to livetiming.formula1.com.
    The F1 SignalR feed needs its ALB cookie and is CORS-blocked for browsers;
    proxying through our own origin solves both. Zero deps. */
-"use strict";
-const http = require("http"), fs = require("fs"), path = require("path");
+import http from "node:http";
+import fs from "node:fs";
+import path from "node:path";
+import dns from "node:dns";
+import net from "node:net";
+import { fileURLToPath } from "node:url";
 /* this host resolves IPv6-first but the route is dead — fetch would hang */
-require("dns").setDefaultResultOrder("ipv4first");
-require("net").setDefaultAutoSelectFamily?.(false);
+dns.setDefaultResultOrder("ipv4first");
+net.setDefaultAutoSelectFamily?.(false);
 
-const ROOT = __dirname;
+const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const PORT = +(process.env.PORT || 8420);
 const F1 = "https://livetiming.formula1.com";
 const jar = new Map(); /* upstream cookies by name — ALB stickiness lives here */
